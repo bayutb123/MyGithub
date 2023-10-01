@@ -11,4 +11,8 @@ class UserUseCase @Inject constructor(
     suspend fun getAllUsers() : List<User>{
         return userRepository.getAllUsers()
     }
+
+    suspend fun searchUsers(query: String) : List<User>{
+        return userRepository.searchUsers(query)
+    }
 }

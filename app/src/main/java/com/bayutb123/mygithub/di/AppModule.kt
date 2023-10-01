@@ -1,7 +1,7 @@
 package com.bayutb123.mygithub.di
 
 import com.bayutb123.mygithub.data.repository.UsersRepositoryImpl
-import com.bayutb123.mygithub.data.source.remote.response.ApiService
+import com.bayutb123.mygithub.data.source.remote.ApiService
 import com.bayutb123.mygithub.domain.repository.UserRepository
 import com.bayutb123.mygithub.domain.usecase.UserUseCase
 import dagger.Module

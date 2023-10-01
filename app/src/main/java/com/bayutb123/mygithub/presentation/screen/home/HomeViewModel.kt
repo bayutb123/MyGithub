@@ -31,4 +31,13 @@ class HomeViewModel @Inject constructor(
             Log.d("HomeViewModel", "getAllUsers: ${_users.size}")
         }
     }
+
+    fun searchUsers(query: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = userUseCase.searchUsers(query)
+            _users.clear()
+            _users.addAll(result)
+            Log.d("HomeViewModel", "searchUsers: ${_users.size}")
+        }
+    }
 }
