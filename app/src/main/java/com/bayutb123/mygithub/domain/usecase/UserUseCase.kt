@@ -1,8 +1,8 @@
 package com.bayutb123.mygithub.domain.usecase
 
 import com.bayutb123.mygithub.domain.model.User
+import com.bayutb123.mygithub.domain.model.UserDetail
 import com.bayutb123.mygithub.domain.repository.UserRepository
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class UserUseCase @Inject constructor(
@@ -14,5 +14,9 @@ class UserUseCase @Inject constructor(
 
     suspend fun searchUsers(query: String) : List<User>{
         return userRepository.searchUsers(query)
+    }
+
+    suspend fun getUserDetail(username: String) : UserDetail {
+        return userRepository.getUserDetail(username)
     }
 }

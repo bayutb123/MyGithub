@@ -1,7 +1,7 @@
 package com.bayutb123.mygithub.presentation.screen.home
 
 import androidx.lifecycle.ViewModel
-import com.bayutb123.mygithub.data.source.remote.UserState
+import com.bayutb123.mygithub.data.source.state.UserState
 import com.bayutb123.mygithub.domain.usecase.UserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope

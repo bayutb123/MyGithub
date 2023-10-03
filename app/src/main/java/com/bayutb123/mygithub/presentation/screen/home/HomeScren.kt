@@ -1,5 +1,6 @@
 package com.bayutb123.mygithub.presentation.screen.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,9 +30,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.bayutb123.mygithub.data.source.remote.UserState
+import com.bayutb123.mygithub.data.source.state.UserState
 import com.bayutb123.mygithub.domain.model.User
+import com.bayutb123.mygithub.presentation.screen.Screen
 import com.bayutb123.mygithub.presentation.screen.home.components.LoadingAnimation
 import com.bayutb123.mygithub.presentation.screen.home.components.SearchBar
 import kotlinx.coroutines.CoroutineScope
@@ -40,11 +43,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    navController: NavController
 ) {
     val homeViewModel = hiltViewModel<HomeViewModel>()
     var isSearching by remember { mutableStateOf(false) }
 
-    Scaffold { paddingValue->
+    Scaffold { paddingValue ->
         Column(
             modifier
                 .padding(paddingValue)
@@ -66,7 +70,9 @@ fun HomeScreen(
                 )
             }
 
-            UserList(state = homeViewModel.state.collectAsState().value)
+            UserList(state = homeViewModel.state.collectAsState().value, onClick = {
+                navController.navigate(Screen.Detail.route.replace("{userName}", it))
+            })
         }
     }
 }
@@ -75,21 +81,27 @@ fun HomeScreen(
 fun UserList(
     modifier: Modifier = Modifier,
     state: UserState,
+    onClick: (String) -> Unit
 ) {
     when (state) {
         is UserState.Success -> {
             LazyColumn(modifier = modifier.fillMaxWidth()) {
                 items(state.data) { user ->
-                    UserItem(user = user)
+                    UserItem(user = user, onClick = {
+                        onClick(user.login)
+                    })
                 }
             }
         }
+
         is UserState.Empty -> {
             Text(text = state.message)
         }
+
         is UserState.Error -> {
             Text(text = state.errorMessage)
         }
+
         is UserState.Loading -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 LoadingAnimation()
@@ -102,21 +114,26 @@ fun UserList(
 fun UserItem(
     modifier: Modifier = Modifier,
     user: User,
+    onClick: () -> Unit
 ) {
 
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .padding(16.dp),
-        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+
+        verticalAlignment = Alignment.CenterVertically
     ) {
 
-        AsyncImage(model = user.avatarUrl, contentDescription = user.login, modifier = modifier
-            .clip(
-                CircleShape
-            )
-            .size(64.dp),
-            contentScale = androidx.compose.ui.layout.ContentScale.Crop)
+        AsyncImage(
+            model = user.avatarUrl, contentDescription = user.login, modifier = modifier
+                .clip(
+                    CircleShape
+                )
+                .size(64.dp),
+            contentScale = androidx.compose.ui.layout.ContentScale.Crop
+        )
         Column(modifier = modifier.padding(start = 16.dp)) {
             Text(
                 text = user.login,

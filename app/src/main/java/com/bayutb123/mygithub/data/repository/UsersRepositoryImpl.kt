@@ -4,6 +4,7 @@ import com.bayutb123.mygithub.BuildConfig
 import com.bayutb123.mygithub.data.source.remote.ApiService
 import com.bayutb123.mygithub.data.utils.DataMapper
 import com.bayutb123.mygithub.domain.model.User
+import com.bayutb123.mygithub.domain.model.UserDetail
 import com.bayutb123.mygithub.domain.repository.UserRepository
 import javax.inject.Inject
 
@@ -38,6 +39,21 @@ class UsersRepositoryImpl @Inject constructor(
                 }
             } else if (response.code() == 403) {
                 throw Exception("API rate limit exceeded")
+            }
+            throw Exception("Error ${response.code()}")
+        } catch (e: Exception) {
+            throw Exception(e.message.toString())
+        }
+    }
+
+    override suspend fun getUserDetail(username: String): UserDetail {
+        try {
+            val response = apiService.getUserDetail(token, username)
+            if (response.isSuccessful) {
+                val data = response.body()
+                if (data != null) {
+                    return DataMapper.mapUserDetailResponseToDomain(data)
+                }
             }
             throw Exception("Error ${response.code()}")
         } catch (e: Exception) {

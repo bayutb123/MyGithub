@@ -1,8 +1,10 @@
 package com.bayutb123.mygithub.data.utils
 
 import com.bayutb123.mygithub.data.source.remote.response.SearchUserResponse
+import com.bayutb123.mygithub.data.source.remote.response.UserDetailResponse
 import com.bayutb123.mygithub.data.source.remote.response.UserResponse
 import com.bayutb123.mygithub.domain.model.User
+import com.bayutb123.mygithub.domain.model.UserDetail
 
 class DataMapper {
     companion object {
@@ -12,6 +14,7 @@ class DataMapper {
                 val user = User(
                     id = it.id,
                     login = it.login,
+                    apiUrl = it.url,
                     avatarUrl = it.avatar_url,
                     followersUrl = it.followers_url,
                     followingUrl = it.following_url,
@@ -28,6 +31,7 @@ class DataMapper {
                 val user = User(
                     id = it.id,
                     login = it.login,
+                    apiUrl = it.url,
                     avatarUrl = it.avatar_url,
                     followersUrl = it.followers_url,
                     followingUrl = it.following_url,
@@ -36,6 +40,21 @@ class DataMapper {
                 listUser.add(user)
             }
             return listUser
+        }
+
+        fun mapUserDetailResponseToDomain(response: UserDetailResponse): UserDetail {
+            return UserDetail(
+                id = response.id,
+                login = response.login,
+                avatarUrl = response.avatar_url,
+                htmlUrl = response.html_url,
+                name = response.name,
+                blog = response.blog,
+                company = response.company,
+                followersUrl = response.followers,
+                followingUrl = response.following,
+                location = response.location
+            )
         }
     }
 }

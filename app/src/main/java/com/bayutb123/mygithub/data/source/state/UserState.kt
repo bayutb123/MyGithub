@@ -1,4 +1,4 @@
-package com.bayutb123.mygithub.data.source.remote
+package com.bayutb123.mygithub.data.source.state
 
 import com.bayutb123.mygithub.domain.model.User
 
