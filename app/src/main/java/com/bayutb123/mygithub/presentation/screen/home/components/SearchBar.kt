@@ -61,7 +61,7 @@ fun SearchBar(
                 errorIndicatorColor = MaterialTheme.colorScheme.error,
                 focusedTrailingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 unfocusedTrailingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                textColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
             )
         )

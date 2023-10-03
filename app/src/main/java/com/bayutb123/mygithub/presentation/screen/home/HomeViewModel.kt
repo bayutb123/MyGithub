@@ -1,13 +1,13 @@
 package com.bayutb123.mygithub.presentation.screen.home
 
-import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import com.bayutb123.mygithub.domain.model.User
+import com.bayutb123.mygithub.data.source.remote.UserState
 import com.bayutb123.mygithub.domain.usecase.UserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,9 +15,8 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val userUseCase: UserUseCase
 ) : ViewModel() {
-    private val _users = mutableStateListOf<User>()
-    val users: List<User>
-        get() = _users
+    private val _state = MutableStateFlow<UserState>(UserState.Loading)
+    val state = _state.asStateFlow()
 
     init {
         getAllUsers()
@@ -26,18 +25,15 @@ class HomeViewModel @Inject constructor(
     fun getAllUsers() {
         CoroutineScope(Dispatchers.IO).launch {
             val result = userUseCase.getAllUsers()
-            _users.clear()
-            _users.addAll(result)
-            Log.d("HomeViewModel", "getAllUsers: ${_users.size}")
+            _state.value = UserState.Success(result)
         }
     }
 
     fun searchUsers(query: String) {
         CoroutineScope(Dispatchers.IO).launch {
+            _state.value = UserState.Loading
             val result = userUseCase.searchUsers(query)
-            _users.clear()
-            _users.addAll(result)
-            Log.d("HomeViewModel", "searchUsers: ${_users.size}")
+            _state.value = UserState.Success(result)
         }
     }
 }
