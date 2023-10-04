@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,9 +18,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -39,6 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.bayutb123.mygithub.data.source.state.RepositoryState
 import com.bayutb123.mygithub.data.source.state.UserDetailState
+import com.bayutb123.mygithub.data.utils.DateFormatter
 import com.bayutb123.mygithub.domain.model.UserDetail
 import com.bayutb123.mygithub.presentation.screen.components.LoadingAnimation
 
@@ -54,9 +57,12 @@ fun DetailScreen(
     var githubUrl = ""
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = {
+            ExtendedFloatingActionButton(
+            onClick = {
                 clipboardManager.setText(AnnotatedString(githubUrl))
             }) {
+                Text(text = "Copy Github URL")
+                Spacer(modifier = Modifier.width(4.dp))
                 Icon(
                     imageVector = Icons.Default.ContentCopy,
                     contentDescription = "Share"
@@ -89,7 +95,10 @@ fun UserInfo(
 ) {
     when (user) {
         is UserDetailState.Loading -> {
-            Box(modifier = modifier.fillMaxWidth().height(172.dp).background(color = MaterialTheme.colorScheme.primary), contentAlignment = Alignment.Center) {
+            Box(modifier = modifier
+                .fillMaxWidth()
+                .height(172.dp)
+                .background(color = MaterialTheme.colorScheme.primary), contentAlignment = Alignment.Center) {
                 LoadingAnimation()
             }
         }
@@ -102,7 +111,11 @@ fun UserInfo(
         }
 
         is UserDetailState.Empty -> {
-            Box(modifier = modifier.fillMaxWidth().height(172.dp).background(color = MaterialTheme.colorScheme.primary).padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
+            Box(modifier = modifier
+                .fillMaxWidth()
+                .height(172.dp)
+                .background(color = MaterialTheme.colorScheme.primary)
+                .padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
                 Text(text = user.message, textAlign = TextAlign.Center)
             }
         }
@@ -132,7 +145,9 @@ fun RepositorySection(
     }
     when (repositoryState){
         is RepositoryState.Loading -> {
-            Box(modifier = modifier.fillMaxWidth().height(128.dp), contentAlignment = Alignment.Center) {
+            Box(modifier = modifier
+                .fillMaxWidth()
+                .height(128.dp), contentAlignment = Alignment.Center) {
                 LoadingAnimation()
             }
         }
@@ -147,17 +162,35 @@ fun RepositorySection(
                             .width(width = 256.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
-                        Column(
-                            modifier = modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
+                        Box(
+
                         ) {
-                            Text(text = it.fullName, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                            if (it.archived) {
-                                Text(text = "Archived", style = MaterialTheme.typography.bodySmall)
+                            Box(modifier = modifier.width(128.dp).background(MaterialTheme.colorScheme.primary)) {
+                                it.lisence.name?.let { name ->
+                                    Text(
+                                        text = name,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
                             }
-                            Text(text = it.lisence.name ?: "Not lisenced", style = MaterialTheme.typography.bodyMedium)
-                            Text(text = it.createdAt, style = MaterialTheme.typography.bodySmall)
+                            Column(
+                                modifier = modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                            ) {
+                                Text(
+                                    text = it.fullName,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+
+                                Text(
+                                    text = DateFormatter.dateFormat(it.createdAt),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
                         }
                     }
                 }
@@ -165,7 +198,10 @@ fun RepositorySection(
         }
 
         is RepositoryState.Empty -> {
-            Box(modifier = modifier.fillMaxWidth().height(128.dp).padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
+            Box(modifier = modifier
+                .fillMaxWidth()
+                .height(128.dp)
+                .padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
                 Text(text = repositoryState.message, textAlign = TextAlign.Center)
             }
         }
@@ -204,6 +240,14 @@ fun ProfileSection(user: UserDetail, modifier: Modifier = Modifier) {
                     style = MaterialTheme.typography.titleMedium
                 )
                 user.location?.let { Text(text = it, color = MaterialTheme.colorScheme.onPrimary) }
+                Row {
+                    Icon(imageVector = Icons.Default.PersonOutline, contentDescription = null, modifier = modifier.size(16.dp), tint = MaterialTheme.colorScheme.onPrimary)
+                    Text(text = "${user.followers} followers" ,style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary )
+                }
+                Row {
+                    Icon(imageVector = Icons.Default.PersonOutline, contentDescription = null, modifier = modifier.size(16.dp), tint = MaterialTheme.colorScheme.onPrimary)
+                    Text(text = "${user.following} followings" ,style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary )
+                }
             }
         }
     }

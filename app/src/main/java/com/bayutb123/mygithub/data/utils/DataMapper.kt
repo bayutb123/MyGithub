@@ -55,8 +55,10 @@ class DataMapper {
                 repoUrl = response.repos_url,
                 blog = response.blog,
                 company = response.company,
-                followersUrl = response.followers,
-                followingUrl = response.following,
+                followers = response.followers,
+                followersUrl = response.followers_url,
+                following = response.following,
+                followingUrl = response.following_url,
                 location = response.location
             )
         }

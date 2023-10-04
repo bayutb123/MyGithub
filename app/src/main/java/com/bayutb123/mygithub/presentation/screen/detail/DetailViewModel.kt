@@ -36,7 +36,9 @@ class DetailViewModel @Inject constructor(
     fun getUserRepos(userName: String) {
         CoroutineScope(Dispatchers.IO).launch {
             _repoState.value = RepositoryState.Loading
-            val result = userUseCase.getUserRepos(userName)
+            val result = userUseCase.getUserRepos(userName).sortedByDescending {
+                it.updatedAt
+            }
             _repoState.value = if (result.isNotEmpty()) {
                 RepositoryState.Success(result)
             } else {

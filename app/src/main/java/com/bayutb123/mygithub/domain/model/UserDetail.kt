@@ -9,7 +9,9 @@ data class UserDetail(
     val repoUrl: String,
     val blog: String?,
     val company: String?,
-    val followersUrl: Int,
-    val followingUrl: Int,
+    val followers: Int,
+    val following: Int,
+    val followersUrl: String,
+    val followingUrl: String,
     val location: String?
 )
