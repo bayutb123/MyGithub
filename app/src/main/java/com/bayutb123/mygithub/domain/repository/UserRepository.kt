@@ -8,7 +8,7 @@ interface UserRepository {
 
     suspend fun getAllUsers() : List<User>
     suspend fun searchUsers(query: String) : List<User>
-    suspend fun getUserDetail(username: String) : UserDetail
+    suspend fun getUserDetail(username: String) : UserDetail?
 
     suspend fun getUserRepos(username: String) : List<Repository>
 

@@ -28,18 +28,19 @@ class HomeViewModel @Inject constructor(
             _state.value = if (result.isNotEmpty()) {
                 UserState.Success(result)
             } else {
-                UserState.Empty("No Data")
+                UserState.Empty("No data can be provided, this might because of rate limit")
             }
         }
     }
 
     fun searchUsers(query: String) {
         CoroutineScope(Dispatchers.IO).launch {
+            _state.value = UserState.Loading
             val result = userUseCase.searchUsers(query)
             _state.value = if (result.isNotEmpty()) {
                 UserState.Success(result)
             } else {
-                UserState.Empty("No Data")
+                UserState.Empty("No data can be provided, this might because of rate limit")
             }
         }
     }

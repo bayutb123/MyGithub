@@ -17,7 +17,7 @@ class UserUseCase @Inject constructor(
         return userRepository.searchUsers(query)
     }
 
-    suspend fun getUserDetail(username: String) : UserDetail {
+    suspend fun getUserDetail(username: String) : UserDetail? {
         return userRepository.getUserDetail(username)
     }
 

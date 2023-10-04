@@ -7,4 +7,5 @@ sealed class UserDetailState {
     data class Success(val data: UserDetail) : UserDetailState()
     data class Error(val errorMessage: String) : UserDetailState()
 
+    data class Empty(val message: String) : UserDetailState()
 }

@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
@@ -35,8 +36,8 @@ import coil.compose.AsyncImage
 import com.bayutb123.mygithub.data.source.state.UserState
 import com.bayutb123.mygithub.domain.model.User
 import com.bayutb123.mygithub.presentation.screen.Screen
-import com.bayutb123.mygithub.presentation.screen.home.components.LoadingAnimation
-import com.bayutb123.mygithub.presentation.screen.home.components.SearchBar
+import com.bayutb123.mygithub.presentation.screen.components.LoadingAnimation
+import com.bayutb123.mygithub.presentation.screen.components.SearchBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -87,16 +88,18 @@ fun UserList(
         is UserState.Success -> {
             LazyColumn(modifier = modifier.fillMaxWidth()) {
                 items(state.data) { user ->
-                    UserItem(user = user, onClick = {
-                        onClick(user.login)
-                    })
+                        UserItem(user = user, onClick = {
+                            onClick(user.login)
+                        })
                 }
             }
         }
 
         is UserState.Empty -> {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = state.message)
+            Box(modifier = modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
+                Text(text = state.message, textAlign = TextAlign.Center)
             }
         }
 

@@ -49,7 +49,7 @@ class UsersRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getUserDetail(username: String): UserDetail {
+    override suspend fun getUserDetail(username: String): UserDetail? {
         try {
             val response = apiService.getUserDetail(token, username)
             if (response.isSuccessful) {
@@ -57,6 +57,8 @@ class UsersRepositoryImpl @Inject constructor(
                 if (data != null) {
                     return DataMapper.mapUserDetailResponseToDomain(data)
                 }
+            } else {
+                return null
             }
             throw Exception("Error ${response.code()}")
         } catch (e: Exception) {
@@ -75,6 +77,8 @@ class UsersRepositoryImpl @Inject constructor(
                 if (data != null) {
                     return DataMapper.mapRepositoryResponseToDomain(data)
                 }
+            } else {
+                return emptyList()
             }
             throw Exception("Error ${response.code()}")
         } catch (e: Exception) {

@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,7 +40,7 @@ import coil.compose.AsyncImage
 import com.bayutb123.mygithub.data.source.state.RepositoryState
 import com.bayutb123.mygithub.data.source.state.UserDetailState
 import com.bayutb123.mygithub.domain.model.UserDetail
-import com.bayutb123.mygithub.presentation.screen.home.components.LoadingAnimation
+import com.bayutb123.mygithub.presentation.screen.components.LoadingAnimation
 
 @Composable
 fun DetailScreen(
@@ -100,6 +101,12 @@ fun UserInfo(
             }
         }
 
+        is UserDetailState.Empty -> {
+            Box(modifier = modifier.fillMaxWidth().height(172.dp).background(color = MaterialTheme.colorScheme.primary).padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
+                Text(text = user.message, textAlign = TextAlign.Center)
+            }
+        }
+
         is UserDetailState.Error -> {
             Text(text = user.errorMessage)
         }
@@ -156,6 +163,13 @@ fun RepositorySection(
                 }
             }
         }
+
+        is RepositoryState.Empty -> {
+            Box(modifier = modifier.fillMaxWidth().height(128.dp).padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
+                Text(text = repositoryState.message, textAlign = TextAlign.Center)
+            }
+        }
+
         is RepositoryState.Error -> {
             Text(text = repositoryState.errorMessage)
         }

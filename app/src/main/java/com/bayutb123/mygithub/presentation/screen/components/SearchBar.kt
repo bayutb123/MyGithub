@@ -1,4 +1,4 @@
-package com.bayutb123.mygithub.presentation.screen.home.components
+package com.bayutb123.mygithub.presentation.screen.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth

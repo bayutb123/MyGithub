@@ -24,8 +24,11 @@ class DetailViewModel @Inject constructor(
     fun getUserDetail(userName: String) {
         CoroutineScope(Dispatchers.IO).launch {
             _userState.value = UserDetailState.Loading
-            userUseCase.getUserDetail(userName).let {
-                _userState.value = UserDetailState.Success(it)
+            val result = userUseCase.getUserDetail(userName)
+            _userState.value = if (result != null) {
+                UserDetailState.Success(result)
+            } else {
+                UserDetailState.Empty("No data can be provided, this might because of rate limit")
             }
         }
     }
@@ -33,8 +36,11 @@ class DetailViewModel @Inject constructor(
     fun getUserRepos(userName: String) {
         CoroutineScope(Dispatchers.IO).launch {
             _repoState.value = RepositoryState.Loading
-            userUseCase.getUserRepos(userName).let {
-                _repoState.value = RepositoryState.Success(it)
+            val result = userUseCase.getUserRepos(userName)
+            _repoState.value = if (result.isNotEmpty()) {
+                RepositoryState.Success(result)
+            } else {
+                RepositoryState.Empty("No data can be provided, this might because of rate limit")
             }
         }
     }
