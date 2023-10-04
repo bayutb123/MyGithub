@@ -1,5 +1,6 @@
 package com.bayutb123.mygithub.domain.usecase
 
+import com.bayutb123.mygithub.domain.model.Repository
 import com.bayutb123.mygithub.domain.model.User
 import com.bayutb123.mygithub.domain.model.UserDetail
 import com.bayutb123.mygithub.domain.repository.UserRepository
@@ -18,5 +19,9 @@ class UserUseCase @Inject constructor(
 
     suspend fun getUserDetail(username: String) : UserDetail {
         return userRepository.getUserDetail(username)
+    }
+
+    suspend fun getUserRepos(username: String) : List<Repository> {
+        return userRepository.getUserRepos(username)
     }
 }

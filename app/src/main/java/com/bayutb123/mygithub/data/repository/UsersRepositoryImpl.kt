@@ -3,6 +3,7 @@ package com.bayutb123.mygithub.data.repository
 import com.bayutb123.mygithub.BuildConfig
 import com.bayutb123.mygithub.data.source.remote.ApiService
 import com.bayutb123.mygithub.data.utils.DataMapper
+import com.bayutb123.mygithub.domain.model.Repository
 import com.bayutb123.mygithub.domain.model.User
 import com.bayutb123.mygithub.domain.model.UserDetail
 import com.bayutb123.mygithub.domain.repository.UserRepository
@@ -21,6 +22,8 @@ class UsersRepositoryImpl @Inject constructor(
                 if (data != null) {
                     return DataMapper.mapUserResponseToDomain(data)
                 }
+            } else {
+                return emptyList()
             }
             throw Exception("Error ${response.code()}")
         } catch (e: Exception) {
@@ -53,6 +56,24 @@ class UsersRepositoryImpl @Inject constructor(
                 val data = response.body()
                 if (data != null) {
                     return DataMapper.mapUserDetailResponseToDomain(data)
+                }
+            }
+            throw Exception("Error ${response.code()}")
+        } catch (e: Exception) {
+            throw Exception(e.message.toString())
+        }
+    }
+
+    override suspend fun getUserRepos(username: String): List<Repository> {
+        try {
+            val response = apiService.getUserRepos(token, username)
+            if (response.isSuccessful) {
+                val data = response.body()
+                    ?.filter {
+                        !it.archived
+                    }
+                if (data != null) {
+                    return DataMapper.mapRepositoryResponseToDomain(data)
                 }
             }
             throw Exception("Error ${response.code()}")

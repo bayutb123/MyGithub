@@ -1,8 +1,11 @@
 package com.bayutb123.mygithub.data.utils
 
+import com.bayutb123.mygithub.data.source.remote.response.RepositoryResponse
 import com.bayutb123.mygithub.data.source.remote.response.SearchUserResponse
 import com.bayutb123.mygithub.data.source.remote.response.UserDetailResponse
 import com.bayutb123.mygithub.data.source.remote.response.UserResponse
+import com.bayutb123.mygithub.domain.model.Lisence
+import com.bayutb123.mygithub.domain.model.Repository
 import com.bayutb123.mygithub.domain.model.User
 import com.bayutb123.mygithub.domain.model.UserDetail
 
@@ -49,12 +52,36 @@ class DataMapper {
                 avatarUrl = response.avatar_url,
                 htmlUrl = response.html_url,
                 name = response.name,
+                repoUrl = response.repos_url,
                 blog = response.blog,
                 company = response.company,
                 followersUrl = response.followers,
                 followingUrl = response.following,
                 location = response.location
             )
+        }
+
+        fun mapRepositoryResponseToDomain(response: List<RepositoryResponse>) : List<Repository> {
+            val listRepository = mutableListOf<Repository>()
+            response.forEach{
+                listRepository.add(
+                    Repository(
+                        id = it.id,
+                        name = it.name,
+                        fullName = it.full_name,
+                        createdAt = it.created_at,
+                        updatedAt = it.updated_at,
+                        archived = it.archived,
+                        lisence = Lisence(
+                            key = it.license?.key,
+                            name = it.license?.name,
+                            url = it.license?.url
+                        ),
+                        htmlUrl = it.html_url
+                    )
+                )
+            }
+            return listRepository
         }
     }
 }

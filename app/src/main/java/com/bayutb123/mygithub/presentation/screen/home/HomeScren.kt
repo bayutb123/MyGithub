@@ -95,7 +95,9 @@ fun UserList(
         }
 
         is UserState.Empty -> {
-            Text(text = state.message)
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = state.message)
+            }
         }
 
         is UserState.Error -> {

@@ -1,5 +1,6 @@
 package com.bayutb123.mygithub.data.source.remote
 
+import com.bayutb123.mygithub.data.source.remote.response.RepositoryResponse
 import com.bayutb123.mygithub.data.source.remote.response.SearchUserResponse
 import com.bayutb123.mygithub.data.source.remote.response.UserDetailResponse
 import com.bayutb123.mygithub.data.source.remote.response.UserResponse
@@ -32,5 +33,12 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("username") username: String
     ) : Response<UserDetailResponse>
+
+    @GET("users/{username}/repos")
+    @Headers("Accept: application/json")
+    suspend fun getUserRepos(
+        @Header("Authorization") token: String,
+        @Path("username") username: String
+    ) : Response<List<RepositoryResponse>>
 
 }

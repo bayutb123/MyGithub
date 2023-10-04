@@ -25,15 +25,22 @@ class HomeViewModel @Inject constructor(
     fun getAllUsers() {
         CoroutineScope(Dispatchers.IO).launch {
             val result = userUseCase.getAllUsers()
-            _state.value = UserState.Success(result)
+            _state.value = if (result.isNotEmpty()) {
+                UserState.Success(result)
+            } else {
+                UserState.Empty("No Data")
+            }
         }
     }
 
     fun searchUsers(query: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            _state.value = UserState.Loading
             val result = userUseCase.searchUsers(query)
-            _state.value = UserState.Success(result)
+            _state.value = if (result.isNotEmpty()) {
+                UserState.Success(result)
+            } else {
+                UserState.Empty("No Data")
+            }
         }
     }
 }
