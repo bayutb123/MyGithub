@@ -85,4 +85,38 @@ class UsersRepositoryImpl @Inject constructor(
             throw Exception(e.message.toString())
         }
     }
+
+    override suspend fun getUserFollowers(username: String): List<User> {
+        try {
+            val response = apiService.getUserFollowers(token, username)
+            if (response.isSuccessful) {
+                val data = response.body()
+                if (data != null) {
+                    return DataMapper.mapUserResponseToDomain(data)
+                }
+            } else {
+                return emptyList()
+            }
+            throw Exception("Error ${response.code()}")
+        } catch (e: Exception) {
+            throw Exception(e.message.toString())
+        }
+    }
+
+    override suspend fun getUserFollowing(username: String): List<User> {
+        try {
+            val response = apiService.getUserFollowing(token, username)
+            if (response.isSuccessful) {
+                val data = response.body()
+                if (data != null) {
+                    return DataMapper.mapUserResponseToDomain(data)
+                }
+            } else {
+                return emptyList()
+            }
+            throw Exception("Error ${response.code()}")
+        } catch (e: Exception) {
+            throw Exception(e.message.toString())
+        }
+    }
 }

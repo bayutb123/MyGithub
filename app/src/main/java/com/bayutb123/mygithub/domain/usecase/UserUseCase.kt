@@ -24,4 +24,12 @@ class UserUseCase @Inject constructor(
     suspend fun getUserRepos(username: String) : List<Repository> {
         return userRepository.getUserRepos(username)
     }
+
+    suspend fun getUserFollowers(username: String) : List<User> {
+        return userRepository.getUserFollowers(username)
+    }
+
+    suspend fun getUserFollowing(username: String) : List<User> {
+        return userRepository.getUserFollowing(username)
+    }
 }

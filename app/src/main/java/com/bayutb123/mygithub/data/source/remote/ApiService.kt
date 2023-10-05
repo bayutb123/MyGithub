@@ -41,4 +41,18 @@ interface ApiService {
         @Path("username") username: String
     ) : Response<List<RepositoryResponse>>
 
+    @GET("users/{username}/followers")
+    @Headers("Accept: application/json")
+    suspend fun getUserFollowers(
+        @Header("Authorization") token: String,
+        @Path("username") username: String
+    ) : Response<List<UserResponse>>
+
+    @GET("users/{username}/following")
+    @Headers("Accept: application/json")
+    suspend fun getUserFollowing(
+        @Header("Authorization") token: String,
+        @Path("username") username: String
+    ) : Response<List<UserResponse>>
+
 }
