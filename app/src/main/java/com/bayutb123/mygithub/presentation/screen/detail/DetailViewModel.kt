@@ -27,9 +27,16 @@ class DetailViewModel @Inject constructor(
     val followerState = _followerState.asStateFlow()
     val followingState = _followingState.asStateFlow()
 
+    fun init(userName: String, isInitiated: Boolean) {
+        if (!isInitiated) {
+            getUserDetail(userName)
+            getUserRepos(userName)
+            getUserFollowers(userName)
+            getUserFollowing(userName)
+        }
+    }
 
-
-    fun getUserDetail(userName: String) {
+    private fun getUserDetail(userName: String) {
         CoroutineScope(Dispatchers.IO).launch {
             _userState.value = UserDetailState.Loading
             val result = userUseCase.getUserDetail(userName)
@@ -41,7 +48,7 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun getUserRepos(userName: String) {
+    private fun getUserRepos(userName: String) {
         CoroutineScope(Dispatchers.IO).launch {
             _repoState.value = RepositoryState.Loading
             val result = userUseCase.getUserRepos(userName).sortedByDescending {
@@ -55,7 +62,7 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun getUserFollowers(userName: String) {
+    private fun getUserFollowers(userName: String) {
         CoroutineScope(Dispatchers.IO).launch {
             _followerState.value = UserState.Loading
             val result = userUseCase.getUserFollowers(userName)
@@ -67,7 +74,7 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun getUserFollowing(userName: String) {
+    private fun getUserFollowing(userName: String) {
         CoroutineScope(Dispatchers.IO).launch {
             _followingState.value = UserState.Loading
             val result = userUseCase.getUserFollowing(userName)

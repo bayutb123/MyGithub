@@ -37,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -67,10 +68,11 @@ fun DetailScreen(
 ) {
     val detailViewModel = hiltViewModel<DetailViewModel>()
     val clipboardManager = LocalClipboardManager.current
-    detailViewModel.getUserDetail(userName)
-    detailViewModel.getUserRepos(userName)
-    detailViewModel.getUserFollowers(userName)
-    detailViewModel.getUserFollowing(userName)
+    var isInitiated by remember {
+        mutableStateOf(false)
+    }
+    detailViewModel.init(userName = userName, isInitiated = isInitiated)
+    isInitiated = true
     var githubUrl = ""
 
     Scaffold(
@@ -104,7 +106,7 @@ fun DetailScreen(
             TabSection(
                 modifier = modifier,
                 followerState = detailViewModel.followerState.collectAsState().value,
-                followingState = detailViewModel.followingState.collectAsState().value
+                followingState = detailViewModel.followingState.collectAsState().value,
             )
         }
     }
@@ -114,7 +116,7 @@ fun DetailScreen(
 fun TabSection(
     modifier: Modifier = Modifier,
     followerState: UserState,
-    followingState: UserState
+    followingState: UserState,
 ) {
     var selectedTabRow by remember {
         mutableIntStateOf(0)
@@ -295,7 +297,6 @@ fun RepositoryRow(
     }
 
 }
-
 
 @Composable
 fun ProfileSection(user: UserDetail, modifier: Modifier = Modifier) {
