@@ -24,6 +24,7 @@ class HomeViewModel @Inject constructor(
 
     fun getAllUsers() {
         CoroutineScope(Dispatchers.IO).launch {
+            _state.value = UserState.Loading
             val result = userUseCase.getAllUsers()
             _state.value = if (result.isNotEmpty()) {
                 UserState.Success(result)

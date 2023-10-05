@@ -50,7 +50,7 @@ class DetailViewModel @Inject constructor(
             _repoState.value = if (result.isNotEmpty()) {
                 RepositoryState.Success(result)
             } else {
-                RepositoryState.Empty("No data can be provided, this might because of rate limit")
+                RepositoryState.Empty("No data")
             }
         }
     }
@@ -62,7 +62,7 @@ class DetailViewModel @Inject constructor(
             _followerState.value = if (result.isNotEmpty()) {
                 UserState.Success(result)
             } else {
-                UserState.Empty("No data can be provided, this might because of rate limit")
+                UserState.Empty("No data")
             }
         }
     }
@@ -74,7 +74,7 @@ class DetailViewModel @Inject constructor(
             _followingState.value = if (result.isNotEmpty()) {
                 UserState.Success(result)
             } else {
-                UserState.Empty("No data can be provided, this might because of rate limit")
+                UserState.Empty("No data")
             }
         }
     }

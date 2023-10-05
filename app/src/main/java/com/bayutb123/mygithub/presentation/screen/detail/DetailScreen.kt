@@ -125,14 +125,8 @@ fun TabSection(
         onTabSelected = {
             selectedTabRow = it
         },
-        followers = when (followerState) {
-            is UserState.Success -> followerState.data
-            else -> emptyList()
-        },
-        following = when (followingState) {
-            is UserState.Success -> followingState.data
-            else -> emptyList()
-        }
+        followersState = followerState,
+        followingState = followingState
     )
 }
 
@@ -202,7 +196,7 @@ fun RepositorySection(
             Box(
                 modifier = modifier
                     .fillMaxWidth()
-                    .height(128.dp), contentAlignment = Alignment.Center
+                    .height(72.dp), contentAlignment = Alignment.Center
             ) {
                 LoadingAnimation()
             }
@@ -221,7 +215,7 @@ fun RepositorySection(
             Box(
                 modifier = modifier
                     .fillMaxWidth()
-                    .height(128.dp)
+                    .height(72.dp)
                     .padding(horizontal = 16.dp), contentAlignment = Alignment.Center
             ) {
                 Text(text = repositoryState.message, textAlign = TextAlign.Center)
@@ -362,13 +356,47 @@ fun ProfileSection(user: UserDetail, modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun Connections(followers: List<User>, modifier: Modifier) {
+    LazyColumn(contentPadding = PaddingValues(vertical =8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        items(followers) {
+            Row(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .clickable {  }
+                    .padding(horizontal = 16.dp),
+
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                AsyncImage(
+                    model = it.avatarUrl, contentDescription =it.login, modifier = modifier
+                        .clip(
+                            CircleShape
+                        )
+                        .size(64.dp),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                )
+                Column(modifier = modifier.padding(start = 16.dp)) {
+                    Text(
+                        text = it.login,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                }
+            }
+        }
+    }
+}
+
+@Composable
 @UiComposable
 fun TabView(
     modifier: Modifier = Modifier,
     selectedTab: Int,
     onTabSelected: (Int) -> Unit,
-    followers: List<User>,
-    following: List<User>
+    followersState: UserState,
+    followingState: UserState
 ) {
     TabRow(
         selectedTabIndex = selectedTab,
@@ -380,7 +408,7 @@ fun TabView(
         },
         contentColor = MaterialTheme.colorScheme.onSurface,
         containerColor = MaterialTheme.colorScheme.surface,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().padding(top = 8.dp),
         ) {
             Tab(
                 selected = selectedTab == 0,
@@ -397,80 +425,45 @@ fun TabView(
         }
         when (selectedTab) {
             0 -> {
-                LazyColumn(contentPadding = PaddingValues(vertical =8.dp)) {
-                    items(followers) {
-                        Row(
-                            modifier = modifier
-                                .fillMaxWidth()
-                                .clickable {  }
-                                .padding(horizontal = 16.dp),
-
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-
-                            AsyncImage(
-                                model = it.avatarUrl, contentDescription =it.login, modifier = modifier
-                                    .clip(
-                                        CircleShape
-                                    )
-                                    .size(64.dp),
-                                contentScale = androidx.compose.ui.layout.ContentScale.Crop
-                            )
-                            Column(modifier = modifier) {
-                                Text(
-                                    text = it.login,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                                Row(
-                                    modifier = modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(text = "Follower : ")
-                                    Text(text = "Following : ")
-                                }
-                            }
+                when (followersState) {
+                    is UserState.Loading -> {
+                        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            LoadingAnimation()
+                        }
+                    }
+                    is UserState.Success -> {
+                        Connections(followers = followersState.data, modifier = modifier)
+                    }
+                    is UserState.Empty -> {
+                        Box(modifier = modifier.fillMaxSize().padding(horizontal = 8.dp), contentAlignment = Alignment.Center) {
+                            Text(text = followersState.message, textAlign = TextAlign.Center)
+                        }
+                    }
+                    else -> {
+                        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            LoadingAnimation()
                         }
                     }
                 }
-
             }
             1 -> {
-                LazyColumn(contentPadding = PaddingValues(vertical = 8.dp)) {
-                    items(following) {
-                        Row(
-                            modifier = modifier
-                                .fillMaxWidth()
-                                .clickable { }
-                                .padding(horizontal = 16.dp),
-
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-
-                            AsyncImage(
-                                model = it.avatarUrl,
-                                contentDescription = it.login,
-                                modifier = modifier
-                                    .clip(
-                                        CircleShape
-                                    )
-                                    .size(64.dp),
-                                contentScale = androidx.compose.ui.layout.ContentScale.Crop
-                            )
-                            Column(modifier = modifier) {
-                                Text(
-                                    text = it.login,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                                Row(
-                                    modifier = modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(text = "Follower : ")
-                                    Text(text = "Following : ")
-                                }
-                            }
+                when (followingState) {
+                    is UserState.Loading -> {
+                        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            LoadingAnimation()
+                        }
+                    }
+                    is UserState.Success -> {
+                        Connections(followers = followingState.data, modifier = modifier)
+                    }
+                    is UserState.Empty -> {
+                        Box(modifier = modifier.fillMaxSize().padding(horizontal = 8.dp), contentAlignment = Alignment.Center) {
+                            Text(text = followingState.message, textAlign = TextAlign.Center)
+                        }
+                    }
+                    else -> {
+                        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            LoadingAnimation()
                         }
                     }
                 }
