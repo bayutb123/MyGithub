@@ -252,19 +252,38 @@ fun RepositoryRow(
                 Box(
 
                 ) {
-                    it.lisence.name?.let { name ->
+                    if (it.lisence.name != null) {
                         Box(
                             modifier = modifier
                                 .width(128.dp)
                                 .background(
-                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.onPrimary,
                                     shape = RoundedCornerShape(bottomEnd = 4.dp)
                                 )
                                 .padding(horizontal = 8.dp, vertical = 2.dp)
                         ) {
 
                             Text(
-                                text = name,
+                                text = it.lisence.name,
+                                maxLines = 1,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    } else {
+                        Box(
+                            modifier = modifier
+                                .width(128.dp)
+                                .background(
+                                    MaterialTheme.colorScheme.onSurface,
+                                    shape = RoundedCornerShape(bottomEnd = 4.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+
+                            Text(
+                                text = "Not lisenced",
                                 maxLines = 1,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onPrimary,
@@ -278,7 +297,7 @@ fun RepositoryRow(
                             .padding(start = 16.dp, top = 24.dp, bottom = 16.dp, end = 16.dp),
                     ) {
                         Text(
-                            text = it.fullName,
+                            text = it.name ?: it.fullName,
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Bold,
                             maxLines = 1,
