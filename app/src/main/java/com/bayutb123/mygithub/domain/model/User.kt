@@ -19,6 +19,6 @@ data class User(
     val followingUrl: String,
     @ColumnInfo(name = "repos_url")
     val reposUrl: String,
-    @ColumnInfo(name = "isFavorite")
-    var isFavorite: Boolean = false
+    @ColumnInfo(name = "isSaved")
+    var isSaved: Boolean?
 )

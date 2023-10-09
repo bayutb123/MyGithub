@@ -1,11 +1,13 @@
 package com.bayutb123.mygithub.presentation.screen.home.saved
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -16,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bayutb123.mygithub.data.source.state.UserState
 import com.bayutb123.mygithub.presentation.screen.components.LoadingAnimation
-import com.bayutb123.mygithub.presentation.screen.home.recommendation.UserItem
+import com.bayutb123.mygithub.presentation.screen.components.UserItem
 
 @Composable
 fun SavedScreen(
@@ -24,33 +26,47 @@ fun SavedScreen(
     onItemClick: (String) -> Unit,
     viewModel: SavedViewModel = hiltViewModel()
 ) {
-    when (val state = viewModel.state.collectAsState().value) {
-        is UserState.Success -> {
-            UserList(
-                modifier = modifier,
-                state = state,
-                onClick = onItemClick,
-            )
-        }
 
-        is UserState.Empty -> {
-            Box(modifier = modifier
+    Scaffold(
+        topBar = {
+            LiveSearchBar(modifier = modifier.padding(vertical= 16.dp, horizontal = 8.dp),onSearch = viewModel::searchUsers )
+        }
+    ) {paddingValues ->
+        Column(
+            modifier = modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
-                Text(text = state.message, textAlign = TextAlign.Center)
-            }
-        }
+                .padding(paddingValues)
+        ) {
+            when (val state = viewModel.state.collectAsState().value) {
+                is UserState.Success -> {
+                    UserList(
+                        modifier = modifier,
+                        state = state,
+                        onClick = onItemClick,
+                    )
+                }
 
-        is UserState.Error -> {
-            Text(text = state.errorMessage)
-        }
+                is UserState.Empty -> {
+                    Box(modifier = modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
+                        Text(text = state.message, textAlign = TextAlign.Center)
+                    }
+                }
 
-        is UserState.Loading -> {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                LoadingAnimation()
+                is UserState.Error -> {
+                    Text(text = state.errorMessage)
+                }
+
+                is UserState.Loading -> {
+                    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        LoadingAnimation()
+                    }
+                }
             }
         }
     }
+
 }
 
 @Composable

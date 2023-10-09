@@ -9,11 +9,11 @@ class DatabaseUseCase @Inject constructor(
 ) {
     fun getAllSavedUsers() = databaseRepository.getUsers()
     fun searchUsers(query: String) = databaseRepository.searchUsers(query)
-    suspend fun saveUser(user: UserDetail) {
-        databaseRepository.insertUser(user)
+    suspend fun saveUser(user: UserDetail, currentState: Boolean = false) {
+        databaseRepository.insertUser(user, currentState)
     }
 
-    suspend fun deleteUser(user: UserDetail) = databaseRepository.deleteUser(user)
+    suspend fun deleteUser(user: UserDetail, currentState: Boolean = true) = databaseRepository.deleteUser(user, currentState)
 
     fun getUser(login: String) = databaseRepository.getUser(login)
 }

@@ -1,6 +1,8 @@
 package com.bayutb123.mygithub.presentation.screen.detail
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -155,7 +157,7 @@ fun FloatingActionButtons(
     Column(
         horizontalAlignment = Alignment.End,
     ) {
-        AnimatedVisibility(visible = isExpanded) {
+        AnimatedVisibility(visible = isExpanded, enter = expandVertically(), exit = shrinkHorizontally()) {
             Column(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.spacedBy(8.dp)

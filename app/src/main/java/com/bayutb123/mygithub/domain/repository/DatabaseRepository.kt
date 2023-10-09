@@ -8,9 +8,9 @@ interface DatabaseRepository {
 
     fun getUsers(): Flow<List<User>>
     fun searchUsers(query: String): Flow<List<User>>
-    suspend fun insertUser(user: UserDetail)
-    suspend fun deleteUser(user: UserDetail)
+    suspend fun insertUser(user: UserDetail, currentState: Boolean)
+    suspend fun deleteUser(user: UserDetail, currentState: Boolean)
 
-    fun getUser(login: String): Flow<User>
+    fun getUser(login: String):User
 
 }

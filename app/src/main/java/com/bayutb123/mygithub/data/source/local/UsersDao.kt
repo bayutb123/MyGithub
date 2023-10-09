@@ -23,5 +23,5 @@ interface UsersDao {
     suspend fun deleteUser(users: User)
 
     @Query("SELECT * FROM users WHERE login = :login")
-    fun getUser(login: String): Flow<User>
+    fun getUser(login: String): User
 }

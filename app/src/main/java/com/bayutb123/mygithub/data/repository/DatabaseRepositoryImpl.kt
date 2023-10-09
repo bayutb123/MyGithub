@@ -1,7 +1,7 @@
 package com.bayutb123.mygithub.data.repository
 
 import com.bayutb123.mygithub.data.source.local.UsersDao
-import com.bayutb123.mygithub.data.utils.DataMapper.Companion.mapUserDetailToUser
+import com.bayutb123.mygithub.data.utils.DataMapper.Companion.saveAndMapUser
 import com.bayutb123.mygithub.domain.model.User
 import com.bayutb123.mygithub.domain.model.UserDetail
 import com.bayutb123.mygithub.domain.repository.DatabaseRepository
@@ -19,15 +19,15 @@ class DatabaseRepositoryImpl @Inject constructor(
         return dao.searchUsers(query)
     }
 
-    override suspend fun insertUser(user: UserDetail) {
-        dao.insertUser(mapUserDetailToUser(user))
+    override suspend fun insertUser(user: UserDetail, currentState: Boolean) {
+        dao.insertUser(saveAndMapUser(user, currentState))
     }
 
-    override suspend fun deleteUser(user: UserDetail) {
-        dao.deleteUser(mapUserDetailToUser(user))
+    override suspend fun deleteUser(user: UserDetail, currentState: Boolean) {
+        dao.deleteUser(saveAndMapUser(user, currentState))
     }
 
-    override fun getUser(login: String): Flow<User> {
+    override fun getUser(login: String): User {
         return dao.getUser(login)
     }
 
