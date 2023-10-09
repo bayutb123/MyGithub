@@ -7,8 +7,8 @@ import javax.inject.Inject
 class DatabaseUseCase @Inject constructor(
     private val databaseRepository: DatabaseRepository
 ) {
-    suspend fun getAllSavedUsers() = databaseRepository.getUsers()
-    suspend fun searchUsers(query: String) = databaseRepository.searchUsers(query)
+    fun getAllSavedUsers() = databaseRepository.getUsers()
+    fun searchUsers(query: String) = databaseRepository.searchUsers(query)
     suspend fun saveUser(user: User) {
         databaseRepository.insertUser(user)
     }

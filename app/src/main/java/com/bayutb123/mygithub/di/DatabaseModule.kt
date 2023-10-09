@@ -10,6 +10,7 @@ import com.bayutb123.mygithub.domain.usecase.DatabaseUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -20,10 +21,14 @@ object DatabaseModule {
 
     @Singleton
     @Provides
+    fun provideContext(@ApplicationContext context: Context) = context
+
+    @Singleton
+    @Provides
     fun provideDatabase(context: Context) = Room.databaseBuilder(
         context,
         MyDatabase::class.java,
-        "my_github.db"
+        "my_github"
     ).build()
 
     @Singleton
@@ -32,7 +37,9 @@ object DatabaseModule {
 
     @Singleton
     @Provides
-    fun provideDatabaseRepository(dao: UsersDao) : DatabaseRepository = DatabaseRepositoryImpl(dao)
+    fun provideDatabaseRepository(dao: UsersDao) : DatabaseRepository {
+        return DatabaseRepositoryImpl(dao)
+    }
 
     @Singleton
     @Provides
