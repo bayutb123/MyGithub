@@ -1,13 +1,12 @@
 package com.bayutb123.mygithub.presentation.screen.detail
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.bayutb123.mygithub.data.source.state.RepositoryState
 import com.bayutb123.mygithub.data.source.state.UserDetailState
 import com.bayutb123.mygithub.data.source.state.UserState
 import com.bayutb123.mygithub.domain.usecase.UserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -27,17 +26,15 @@ class DetailViewModel @Inject constructor(
     val followerState = _followerState.asStateFlow()
     val followingState = _followingState.asStateFlow()
 
-    fun init(userName: String, isInitiated: Boolean) {
-        if (!isInitiated) {
-            getUserDetail(userName)
-            getUserRepos(userName)
-            getUserFollowers(userName)
-            getUserFollowing(userName)
-        }
+    fun init(userName: String) {
+        getUserDetail(userName)
+        getUserRepos(userName)
+        getUserFollowers(userName)
+        getUserFollowing(userName)
     }
 
     private fun getUserDetail(userName: String) {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch {
             _userState.value = UserDetailState.Loading
             val result = userUseCase.getUserDetail(userName)
             _userState.value = if (result != null) {
@@ -49,7 +46,7 @@ class DetailViewModel @Inject constructor(
     }
 
     private fun getUserRepos(userName: String) {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch {
             _repoState.value = RepositoryState.Loading
             val result = userUseCase.getUserRepos(userName).sortedByDescending {
                 it.updatedAt
@@ -63,7 +60,7 @@ class DetailViewModel @Inject constructor(
     }
 
     private fun getUserFollowers(userName: String) {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch {
             _followerState.value = UserState.Loading
             val result = userUseCase.getUserFollowers(userName)
             _followerState.value = if (result.isNotEmpty()) {
@@ -75,7 +72,7 @@ class DetailViewModel @Inject constructor(
     }
 
     private fun getUserFollowing(userName: String) {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch {
             _followingState.value = UserState.Loading
             val result = userUseCase.getUserFollowing(userName)
             _followingState.value = if (result.isNotEmpty()) {

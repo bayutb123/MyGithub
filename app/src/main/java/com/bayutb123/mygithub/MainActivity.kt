@@ -16,6 +16,14 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val mode = applicationContext.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
+        val surContainer = if ( mode == android.content.res.Configuration.UI_MODE_NIGHT_YES) {
+            getColor(R.color.surfaceContainerDark)
+        } else {
+            getColor(R.color.surfaceContainer)
+        }
+        window.navigationBarColor = surContainer
+
         setContent {
             MyGithubTheme {
                 // A surface container using the 'background' color from the theme

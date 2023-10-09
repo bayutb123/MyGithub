@@ -1,6 +1,7 @@
 package com.bayutb123.mygithub.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,6 +13,7 @@ import com.bayutb123.mygithub.presentation.screen.home.HomeScreen
 
 @Composable
 fun App(
+    modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
 

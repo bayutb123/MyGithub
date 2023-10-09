@@ -2,6 +2,8 @@ package com.bayutb123.mygithub.presentation.screen.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -23,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -32,21 +35,25 @@ fun SearchBar(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+
     var text by remember { mutableStateOf("") }
     Box(modifier = modifier.fillMaxWidth()) {
-        TextField(value = text, onValueChange = {
-            text = it
-        }, modifier.fillMaxWidth(),
+        TextField(
+            value = text, onValueChange = {
+                text = it
+            },
+            modifier = modifier.fillMaxWidth().height(56.dp),
             maxLines = 1,
             singleLine = true,
             label = { Text("Search") },
-            trailingIcon = {
+            leadingIcon = {
                 IconButton(onClick = {
                     onSearch(text)
                     focusManager.clearFocus()
                     keyboardController?.hide()
                 }) {
-                    Icon(Icons.Filled.Search, contentDescription = "Search")
+                    Icon(Icons.Filled.Search, contentDescription = "Search", tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.height(24.dp))
                 }
             },
             keyboardOptions = KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Search),
@@ -56,14 +63,24 @@ fun SearchBar(
                 keyboardController?.hide()
             }),
             colors = TextFieldDefaults.textFieldColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                errorIndicatorColor = MaterialTheme.colorScheme.error,
+                disabledIndicatorColor = Color.Transparent,
+                cursorColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                focusedLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 focusedTrailingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                unfocusedLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 unfocusedTrailingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-            )
+                focusedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                disabledLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                errorLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                errorCursorColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                errorIndicatorColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                disabledPlaceholderColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            ),
+            shape = CircleShape,
         )
     }
 }

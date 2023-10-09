@@ -27,6 +27,14 @@ android {
 
         buildConfigField("String", "BASE_URL", "\"https://api.github.com/\"")
         buildConfigField("String", "API_KEY", apiKey )
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments["room.schemaLocation"] = "$projectDir/schemas"
+                arguments["room.incremental"] = "true"
+                arguments["room.expandProjection"] = "true"
+            }
+        }
     }
 
     buildTypes {
@@ -61,6 +69,8 @@ android {
 
 dependencies {
 
+    val room_version = "2.5.2"
+
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.7.2")
@@ -93,6 +103,10 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
 
     implementation("androidx.navigation:navigation-compose:2.7.3")
+
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
 
 }
 

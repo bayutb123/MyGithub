@@ -39,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,11 +69,15 @@ fun DetailScreen(
 ) {
     val detailViewModel = hiltViewModel<DetailViewModel>()
     val clipboardManager = LocalClipboardManager.current
-    var isInitiated by remember {
+    var isInitiated by rememberSaveable {
         mutableStateOf(false)
     }
-    detailViewModel.init(userName = userName, isInitiated = isInitiated)
-    isInitiated = true
+
+    if (!isInitiated) {
+        detailViewModel.init(userName = userName)
+        isInitiated = true
+    }
+
     var githubUrl = ""
 
     Scaffold(
@@ -249,9 +254,7 @@ fun RepositoryRow(
                     pressedElevation = 0.dp
                 )
             ) {
-                Box(
-
-                ) {
+                Box {
                     if (it.lisence.name != null) {
                         Box(
                             modifier = modifier
@@ -382,7 +385,7 @@ fun Connections(followers: List<User>, modifier: Modifier) {
             Row(
                 modifier = modifier
                     .fillMaxWidth()
-                    .clickable {  }
+                    .clickable { }
                     .padding(horizontal = 16.dp),
 
                 verticalAlignment = Alignment.CenterVertically
@@ -428,7 +431,9 @@ fun TabView(
         },
         contentColor = MaterialTheme.colorScheme.onSurface,
         containerColor = MaterialTheme.colorScheme.surface,
-        modifier = modifier.fillMaxWidth().padding(top = 8.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
         ) {
             Tab(
                 selected = selectedTab == 0,
@@ -455,7 +460,9 @@ fun TabView(
                         Connections(followers = followersState.data, modifier = modifier)
                     }
                     is UserState.Empty -> {
-                        Box(modifier = modifier.fillMaxSize().padding(horizontal = 8.dp), contentAlignment = Alignment.Center) {
+                        Box(modifier = modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 8.dp), contentAlignment = Alignment.Center) {
                             Text(text = followersState.message, textAlign = TextAlign.Center)
                         }
                     }
@@ -477,7 +484,9 @@ fun TabView(
                         Connections(followers = followingState.data, modifier = modifier)
                     }
                     is UserState.Empty -> {
-                        Box(modifier = modifier.fillMaxSize().padding(horizontal = 8.dp), contentAlignment = Alignment.Center) {
+                        Box(modifier = modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 8.dp), contentAlignment = Alignment.Center) {
                             Text(text = followingState.message, textAlign = TextAlign.Center)
                         }
                     }

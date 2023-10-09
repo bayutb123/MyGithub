@@ -1,159 +1,93 @@
 package com.bayutb123.mygithub.presentation.screen.home
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmarks
+import androidx.compose.material.icons.filled.DataUsage
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import com.bayutb123.mygithub.data.source.state.UserState
-import com.bayutb123.mygithub.domain.model.User
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.bayutb123.mygithub.presentation.screen.Screen
-import com.bayutb123.mygithub.presentation.screen.components.LoadingAnimation
-import com.bayutb123.mygithub.presentation.screen.components.SearchBar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import com.bayutb123.mygithub.presentation.screen.home.recommendation.RecommendationScreen
+import com.bayutb123.mygithub.presentation.screen.home.saved.SavedScreen
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
-    val homeViewModel = hiltViewModel<HomeViewModel>()
-    var isSearching by remember { mutableStateOf(false) }
-
-    Scaffold { paddingValue ->
-        Column(
-            modifier
-                .padding(paddingValue)
-                .fillMaxWidth()
+    val homeNavController = rememberNavController()
+    var selectedIndex by remember { mutableIntStateOf(0) }
+    Scaffold(
+        bottomBar = {
+            BottomBar(
+                navController = homeNavController,
+                selectedIndex = selectedIndex,
+                onClick = {
+                    selectedIndex = it
+                }
+            )
+        }
+    ) { paddingValue ->
+        NavHost(
+            modifier = modifier.padding(paddingValue),
+            navController = homeNavController,
+            startDestination = Screen.Recommendation.route
         ) {
-            Box(modifier.padding(8.dp)) {
-                SearchBar(
-                    modifier = modifier.fillMaxWidth(),
-                    onSearch = {
-                        isSearching = it.isNotEmpty()
-                        CoroutineScope(homeViewModel.viewModelScope.coroutineContext).launch {
-                            if (isSearching) {
-                                homeViewModel.searchUsers(it)
-                            } else {
-                                homeViewModel.getAllUsers()
-                            }
-                        }
+            composable(Screen.Saved.route) {
+                SavedScreen(
+                    onUserClick = {
+                        navController.navigate(Screen.Detail.route.replace("{userName}", it))
                     }
                 )
             }
-
-            UserList(state = homeViewModel.state.collectAsState().value, onClick = {
-                navController.navigate(Screen.Detail.route.replace("{userName}", it))
-            })
-        }
-    }
-}
-
-@Composable
-fun UserList(
-    modifier: Modifier = Modifier,
-    state: UserState,
-    onClick: (String) -> Unit
-) {
-    when (state) {
-        is UserState.Success -> {
-            LazyColumn(modifier = modifier.fillMaxWidth()) {
-                items(state.data) { user ->
-                        UserItem(user = user, onClick = {
-                            onClick(user.login)
-                        })
-                }
-            }
-        }
-
-        is UserState.Empty -> {
-            Box(modifier = modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
-                Text(text = state.message, textAlign = TextAlign.Center)
-            }
-        }
-
-        is UserState.Error -> {
-            Text(text = state.errorMessage)
-        }
-
-        is UserState.Loading -> {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                LoadingAnimation()
-            }
-        }
-    }
-}
-
-@Composable
-fun UserItem(
-    modifier: Modifier = Modifier,
-    user: User,
-    onClick: () -> Unit
-) {
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(16.dp),
-
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-
-        AsyncImage(
-            model = user.avatarUrl, contentDescription = user.login, modifier = modifier
-                .clip(
-                    CircleShape
+            composable(Screen.Recommendation.route) {
+                RecommendationScreen(
+                    navController = navController
                 )
-                .size(64.dp),
-            contentScale = androidx.compose.ui.layout.ContentScale.Crop
-        )
-        Column(modifier = modifier.padding(start = 16.dp)) {
-            Text(
-                text = user.login,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = modifier.height(8.dp))
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = "Follower : ${user.followersUrl.length}")
-                Text(text = "Following : ${user.followingUrl.length}")
             }
         }
+    }
+}
+
+@Composable
+fun BottomBar(
+    onClick: (Int) -> Unit,
+    navController: NavController,
+    selectedIndex: Int = 0
+) {
+    NavigationBar(
+        modifier = Modifier.height(56.dp),
+    ) {
+        NavigationBarItem(
+            icon = { Icon(imageVector = Icons.Default.DataUsage, contentDescription = "For you") },
+            selected = 0 == selectedIndex,
+            onClick = {
+                onClick(0)
+                navController.navigate(Screen.Recommendation.route)
+            }
+        )
+        NavigationBarItem(
+            icon = { Icon(imageVector = Icons.Default.Bookmarks, contentDescription = "Saved") },
+            selected = 1 == selectedIndex,
+            onClick = {
+                onClick(1)
+                navController.navigate(Screen.Saved.route)
+            }
+        )
     }
 
 }
