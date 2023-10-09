@@ -26,7 +26,6 @@ fun SavedScreen(
     onItemClick: (String) -> Unit,
     viewModel: SavedViewModel = hiltViewModel()
 ) {
-
     Scaffold(
         topBar = {
             LiveSearchBar(modifier = modifier.padding(vertical= 16.dp, horizontal = 8.dp),onSearch = viewModel::searchUsers )

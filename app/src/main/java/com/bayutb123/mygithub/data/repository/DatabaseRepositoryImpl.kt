@@ -1,5 +1,6 @@
 package com.bayutb123.mygithub.data.repository
 
+import android.util.Log
 import com.bayutb123.mygithub.data.source.local.UsersDao
 import com.bayutb123.mygithub.data.utils.DataMapper.Companion.saveAndMapUser
 import com.bayutb123.mygithub.domain.model.User
@@ -12,19 +13,23 @@ class DatabaseRepositoryImpl @Inject constructor(
     private val dao: UsersDao
 ) : DatabaseRepository {
     override fun getUsers(): Flow<List<User>> {
+        Log.d("DatabaseRepositoryImpl", "getUsers")
         return dao.getUsers()
     }
 
     override fun searchUsers(query: String): Flow<List<User>> {
+        Log.d("DatabaseRepositoryImpl", "searchUsers: $query")
         return dao.searchUsers(query)
     }
 
-    override suspend fun insertUser(user: UserDetail, currentState: Boolean) {
-        dao.insertUser(saveAndMapUser(user, currentState))
+    override suspend fun insertUser(user: UserDetail) {
+        Log.d("DatabaseRepositoryImpl", "insertUser: ${user.login}")
+        dao.insertUser(saveAndMapUser(user))
     }
 
-    override suspend fun deleteUser(user: UserDetail, currentState: Boolean) {
-        dao.deleteUser(saveAndMapUser(user, currentState))
+    override suspend fun deleteUser(user: UserDetail) {
+        Log.d("DatabaseRepositoryImpl", "deleteUser: ${user.login}")
+        dao.deleteUser(saveAndMapUser(user))
     }
 
     override fun getUser(login: String): User {

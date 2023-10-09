@@ -99,6 +99,6 @@ class DetailViewModel @Inject constructor(
     }
 
     fun getUserState(login: String): Boolean {
-        return true
+        return false
     }
 }
