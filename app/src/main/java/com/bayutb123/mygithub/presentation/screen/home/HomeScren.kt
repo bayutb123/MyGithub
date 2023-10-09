@@ -40,14 +40,16 @@ fun HomeScreen(
         ) {
             composable(Screen.Saved.route) {
                 SavedScreen(
-                    onUserClick = {
+                    onItemClick = {
                         navController.navigate(Screen.Detail.route.replace("{userName}", it))
                     }
                 )
             }
             composable(Screen.Recommendation.route) {
                 RecommendationScreen(
-                    navController = navController
+                    onItemClick = {
+                        navController.navigate(Screen.Detail.route.replace("{userName}", it))
+                    }
                 )
             }
         }
@@ -58,7 +60,6 @@ fun HomeScreen(
 fun BottomBar(
     navController: NavController,
 ) {
-
     val items = listOf(
         Screen.Recommendation,
         Screen.Saved,

@@ -21,7 +21,7 @@ import com.bayutb123.mygithub.presentation.screen.home.recommendation.UserItem
 @Composable
 fun SavedScreen(
     modifier: Modifier = Modifier,
-    onUserClick: (String) -> Unit,
+    onItemClick: (String) -> Unit,
     viewModel: SavedViewModel = hiltViewModel()
 ) {
     when (val state = viewModel.state.collectAsState().value) {
@@ -29,7 +29,7 @@ fun SavedScreen(
             UserList(
                 modifier = modifier,
                 state = state,
-                onClick = onUserClick,
+                onClick = onItemClick,
             )
         }
 

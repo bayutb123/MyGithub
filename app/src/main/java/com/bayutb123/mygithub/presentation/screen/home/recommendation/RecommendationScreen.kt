@@ -36,11 +36,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.bayutb123.mygithub.data.source.state.UserState
 import com.bayutb123.mygithub.domain.model.User
-import com.bayutb123.mygithub.presentation.screen.Screen
 import com.bayutb123.mygithub.presentation.screen.components.LoadingAnimation
 import com.bayutb123.mygithub.presentation.screen.components.SearchBar
 import kotlinx.coroutines.CoroutineScope
@@ -49,7 +47,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun RecommendationScreen(
     modifier: Modifier = Modifier,
-    navController: NavController
+    onItemClick: (String) -> Unit,
 ) {
     val homeViewModel = hiltViewModel<RecommendationViewModel>()
     var isSearching by remember { mutableStateOf(false) }
@@ -95,12 +93,12 @@ fun RecommendationScreen(
                 UserList(state = homeViewModel.state.collectAsState().value, onSuccessLoad = {
                     cacheList = it
                 }, onClick = {
-                    navController.navigate(Screen.Detail.route.replace("{userName}", it))
+                    onItemClick(it)
                 })
             }
             AnimatedVisibility(visible = isSearching) {
                 SearchUserList(state = homeViewModel.searchState.collectAsState().value, onClick = {
-                    navController.navigate(Screen.Detail.route.replace("{userName}", it))
+                    onItemClick(it)
                 })
             }
 
