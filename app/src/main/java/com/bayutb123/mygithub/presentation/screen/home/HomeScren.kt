@@ -65,7 +65,7 @@ fun BottomBar(
         Screen.Saved,
     )
     NavigationBar(
-        modifier = Modifier.height(56.dp),
+        modifier = Modifier.height(80.dp),
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
