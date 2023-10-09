@@ -1,5 +1,6 @@
 package com.bayutb123.mygithub.presentation.screen.home.recommendation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bayutb123.mygithub.data.source.state.UserState
@@ -24,6 +25,7 @@ class RecommendationViewModel @Inject constructor(
         viewModelScope.launch {
             if (cacheList.isNotEmpty()) {
                 _state.value = UserState.Success(cacheList)
+                Log.d("RecommendationViewModel", "getAllUsers: cacheList is not empty")
             } else {
                 _state.value = UserState.Loading
                 val result = userUseCase.getAllUsers()
@@ -32,6 +34,7 @@ class RecommendationViewModel @Inject constructor(
                 } else {
                     UserState.Empty("No data can be provided, this might because of rate limit")
                 }
+                Log.d("RecommendationViewModel", "getAllUsers: cacheList is empty")
             }
         }
     }

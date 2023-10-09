@@ -22,9 +22,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.BookmarkAdd
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PersonOutline
+import androidx.compose.material.icons.outlined.BookmarkAdd
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -82,46 +83,38 @@ fun DetailScreen(
         isInitiated = true
     }
 
-    var githubUrl = ""
-    var isExpanded by remember {
-        mutableStateOf(false)
+    var isSaved = detailViewModel.getUserState(login = userName)
+
+    var userData: UserDetail by remember {
+        mutableStateOf(
+            UserDetail(
+                0, "", "", "", "", "", "", "", 0, 0, "", "", "",
+            )
+        )
     }
+
 
     Scaffold(
         floatingActionButton = {
-            Column(
-                horizontalAlignment = Alignment.End,
-            ) {
-                AnimatedVisibility(visible = isExpanded) {
-                    Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        ExtendedFloatingActionButton(onClick = {
-                            isExpanded = !isExpanded
-                        }) {
-                            Text(text = "Add to Favourite")
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Add to Favourite")
+            when (detailViewModel.userState.collectAsState().value) {
+                is UserDetailState.Success -> {
+                    FloatingActionButtons(
+                        isSaved = isSaved,
+                        deleteUser = {
+                            detailViewModel.deleteUser(userData)
+                            isSaved = false
+                        },
+                        insertUser = {
+                            detailViewModel.insertUser(userData)
+                            isSaved = true
+                        },
+                        onCopy = {
+                            clipboardManager.setText(AnnotatedString(userData.htmlUrl))
                         }
-                        ExtendedFloatingActionButton(onClick = {
-                            clipboardManager.setText(
-                                AnnotatedString(githubUrl)
-                            )
-                            isExpanded = !isExpanded
-                        }) {
-                            Text(text = "Copy Github URL")
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Icon(imageVector = Icons.Default.ContentCopy, contentDescription = "Copy Github URL")
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                FloatingActionButton(
-                    onClick = {
-                        isExpanded = !isExpanded
-                    }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Share"
                     )
+                }
+                else -> {
+                    return@Scaffold
                 }
             }
         }
@@ -133,8 +126,8 @@ fun DetailScreen(
         ) {
             UserInfo(
                 user = detailViewModel.userState.collectAsState().value,
-                getUserGithubUrl = {
-                    githubUrl = it
+                getUserDetail = {
+                    userData = it
                 })
             RepositorySection(
                 repositoryState = detailViewModel.repoState.collectAsState().value
@@ -143,6 +136,69 @@ fun DetailScreen(
                 modifier = modifier,
                 followerState = detailViewModel.followerState.collectAsState().value,
                 followingState = detailViewModel.followingState.collectAsState().value,
+            )
+        }
+    }
+}
+
+@Composable
+fun FloatingActionButtons(
+    isSaved: Boolean = false,
+    deleteUser: () -> Unit,
+    insertUser: () -> Unit,
+    onCopy: () -> Unit
+) {
+
+    var isExpanded by remember {
+        mutableStateOf(false)
+    }
+    Column(
+        horizontalAlignment = Alignment.End,
+    ) {
+        AnimatedVisibility(visible = isExpanded) {
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ExtendedFloatingActionButton(onClick = {
+                    if (isSaved) {
+                        deleteUser()
+                    } else {
+                        insertUser()
+                    }
+                    isExpanded = !isExpanded
+                }) {
+                    Text(text = "Save User")
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Icon(
+                        imageVector = if (isSaved) {
+                            Icons.Filled.BookmarkAdd
+                        } else {
+                            Icons.Outlined.BookmarkAdd
+                        }, contentDescription = "Save User"
+                    )
+                }
+                ExtendedFloatingActionButton(onClick = {
+                    onCopy()
+                    isExpanded = !isExpanded
+                }) {
+                    Text(text = "Copy URL")
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Icon(
+                        imageVector = Icons.Default.ContentCopy,
+                        contentDescription = "Copy Github URL"
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        FloatingActionButton(
+            onClick = {
+                isExpanded = !isExpanded
+            }) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Share"
             )
         }
     }
@@ -172,7 +228,7 @@ fun TabSection(
 fun UserInfo(
     modifier: Modifier = Modifier,
     user: UserDetailState,
-    getUserGithubUrl: (String) -> Unit
+    getUserDetail: (UserDetail) -> Unit
 ) {
     when (user) {
         is UserDetailState.Loading -> {
@@ -188,7 +244,7 @@ fun UserInfo(
         }
 
         is UserDetailState.Success -> {
-            getUserGithubUrl(user.data.htmlUrl)
+            getUserDetail(user.data)
             Column {
                 ProfileSection(user = user.data, modifier = modifier)
             }
@@ -411,7 +467,10 @@ fun ProfileSection(user: UserDetail, modifier: Modifier = Modifier) {
 
 @Composable
 fun Connections(followers: List<User>, modifier: Modifier) {
-    LazyColumn(contentPadding = PaddingValues(vertical =8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    LazyColumn(
+        contentPadding = PaddingValues(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         items(followers) {
             Row(
                 modifier = modifier
@@ -423,7 +482,7 @@ fun Connections(followers: List<User>, modifier: Modifier) {
             ) {
 
                 AsyncImage(
-                    model = it.avatarUrl, contentDescription =it.login, modifier = modifier
+                    model = it.avatarUrl, contentDescription = it.login, modifier = modifier
                         .clip(
                             CircleShape
                         )
@@ -465,69 +524,80 @@ fun TabView(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 8.dp),
-        ) {
-            Tab(
-                selected = selectedTab == 0,
-                onClick = { onTabSelected(0) },
-                text = { Text(text = "Followers") }
-            )
-            Tab(
-                selected = selectedTab == 1,
-                onClick = { onTabSelected(1) },
-                text = { Text(text = "Following") }
-            )
+    ) {
+        Tab(
+            selected = selectedTab == 0,
+            onClick = { onTabSelected(0) },
+            text = { Text(text = "Followers") }
+        )
+        Tab(
+            selected = selectedTab == 1,
+            onClick = { onTabSelected(1) },
+            text = { Text(text = "Following") }
+        )
 
 
-        }
-        when (selectedTab) {
-            0 -> {
-                when (followersState) {
-                    is UserState.Loading -> {
-                        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            LoadingAnimation()
-                        }
-                    }
-                    is UserState.Success -> {
-                        Connections(followers = followersState.data, modifier = modifier)
-                    }
-                    is UserState.Empty -> {
-                        Box(modifier = modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 8.dp), contentAlignment = Alignment.Center) {
-                            Text(text = followersState.message, textAlign = TextAlign.Center)
-                        }
-                    }
-                    else -> {
-                        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            LoadingAnimation()
-                        }
+    }
+    when (selectedTab) {
+        0 -> {
+            when (followersState) {
+                is UserState.Loading -> {
+                    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        LoadingAnimation()
                     }
                 }
-            }
-            1 -> {
-                when (followingState) {
-                    is UserState.Loading -> {
-                        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            LoadingAnimation()
-                        }
-                    }
-                    is UserState.Success -> {
-                        Connections(followers = followingState.data, modifier = modifier)
-                    }
-                    is UserState.Empty -> {
-                        Box(modifier = modifier
+
+                is UserState.Success -> {
+                    Connections(followers = followersState.data, modifier = modifier)
+                }
+
+                is UserState.Empty -> {
+                    Box(
+                        modifier = modifier
                             .fillMaxSize()
-                            .padding(horizontal = 8.dp), contentAlignment = Alignment.Center) {
-                            Text(text = followingState.message, textAlign = TextAlign.Center)
-                        }
+                            .padding(horizontal = 8.dp), contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = followersState.message, textAlign = TextAlign.Center)
                     }
-                    else -> {
-                        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            LoadingAnimation()
-                        }
+                }
+
+                else -> {
+                    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        LoadingAnimation()
                     }
                 }
             }
         }
+
+        1 -> {
+            when (followingState) {
+                is UserState.Loading -> {
+                    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        LoadingAnimation()
+                    }
+                }
+
+                is UserState.Success -> {
+                    Connections(followers = followingState.data, modifier = modifier)
+                }
+
+                is UserState.Empty -> {
+                    Box(
+                        modifier = modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 8.dp), contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = followingState.message, textAlign = TextAlign.Center)
+                    }
+                }
+
+                else -> {
+                    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        LoadingAnimation()
+                    }
+                }
+            }
+        }
+    }
 
 }

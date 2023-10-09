@@ -5,16 +5,20 @@ import androidx.lifecycle.viewModelScope
 import com.bayutb123.mygithub.data.source.state.RepositoryState
 import com.bayutb123.mygithub.data.source.state.UserDetailState
 import com.bayutb123.mygithub.data.source.state.UserState
+import com.bayutb123.mygithub.domain.model.UserDetail
+import com.bayutb123.mygithub.domain.usecase.DatabaseUseCase
 import com.bayutb123.mygithub.domain.usecase.UserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val userUseCase: UserUseCase
+    private val userUseCase: UserUseCase,
+    private val databaseUseCase: DatabaseUseCase
 ) : ViewModel() {
     private val _userState = MutableStateFlow<UserDetailState>(UserDetailState.Loading)
     private val _repoState = MutableStateFlow<RepositoryState>(RepositoryState.Loading)
@@ -81,5 +85,27 @@ class DetailViewModel @Inject constructor(
                 UserState.Empty("No data")
             }
         }
+    }
+
+    fun deleteUser(user: UserDetail) {
+        viewModelScope.launch {
+            databaseUseCase.deleteUser(user)
+        }
+    }
+
+    fun insertUser(user: UserDetail) {
+        viewModelScope.launch {
+            databaseUseCase.saveUser(user)
+        }
+    }
+
+    fun getUserState(login: String) : Boolean {
+        var result = false
+        viewModelScope.launch {
+            databaseUseCase.getUser(login).collectLatest {
+                result = false
+            }
+        }
+        return result
     }
 }

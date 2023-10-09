@@ -1,5 +1,7 @@
 package com.bayutb123.mygithub.domain.model
 
+import androidx.room.Entity
+
 data class UserDetail(
     val id: Int,
     val login: String,

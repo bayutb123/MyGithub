@@ -85,5 +85,17 @@ class DataMapper {
             }
             return listRepository
         }
+
+        fun mapUserDetailToUser(userDetail: UserDetail) : User {
+            return User(
+                id = userDetail.id,
+                login = userDetail.login,
+                apiUrl = userDetail.htmlUrl,
+                avatarUrl = userDetail.avatarUrl,
+                followersUrl = userDetail.followersUrl,
+                followingUrl = userDetail.followingUrl,
+                reposUrl = userDetail.repoUrl
+            )
+        }
     }
 }

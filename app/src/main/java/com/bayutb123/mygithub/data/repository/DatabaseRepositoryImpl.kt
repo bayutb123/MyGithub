@@ -1,7 +1,9 @@
 package com.bayutb123.mygithub.data.repository
 
 import com.bayutb123.mygithub.data.source.local.UsersDao
+import com.bayutb123.mygithub.data.utils.DataMapper.Companion.mapUserDetailToUser
 import com.bayutb123.mygithub.domain.model.User
+import com.bayutb123.mygithub.domain.model.UserDetail
 import com.bayutb123.mygithub.domain.repository.DatabaseRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -17,13 +19,16 @@ class DatabaseRepositoryImpl @Inject constructor(
         return dao.searchUsers(query)
     }
 
-    override suspend fun insertUser(user: User) {
-        dao.insertUser(user)
+    override suspend fun insertUser(user: UserDetail) {
+        dao.insertUser(mapUserDetailToUser(user))
     }
 
-    override suspend fun deleteUser(user: User) {
-        dao.deleteUser(user)
+    override suspend fun deleteUser(user: UserDetail) {
+        dao.deleteUser(mapUserDetailToUser(user))
     }
 
+    override fun getUser(login: String): Flow<User> {
+        return dao.getUser(login)
+    }
 
 }
