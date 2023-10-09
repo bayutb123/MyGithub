@@ -1,5 +1,6 @@
 package com.bayutb123.mygithub.presentation.screen.detail
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,11 +21,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -79,19 +83,46 @@ fun DetailScreen(
     }
 
     var githubUrl = ""
+    var isExpanded by remember {
+        mutableStateOf(false)
+    }
 
     Scaffold(
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = {
-                    clipboardManager.setText(AnnotatedString(githubUrl))
-                }) {
-                Text(text = "Copy Github URL")
-                Spacer(modifier = Modifier.width(4.dp))
-                Icon(
-                    imageVector = Icons.Default.ContentCopy,
-                    contentDescription = "Share"
-                )
+            Column(
+                horizontalAlignment = Alignment.End,
+            ) {
+                AnimatedVisibility(visible = isExpanded) {
+                    Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        ExtendedFloatingActionButton(onClick = {
+                            isExpanded = !isExpanded
+                        }) {
+                            Text(text = "Add to Favourite")
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Add to Favourite")
+                        }
+                        ExtendedFloatingActionButton(onClick = {
+                            clipboardManager.setText(
+                                AnnotatedString(githubUrl)
+                            )
+                            isExpanded = !isExpanded
+                        }) {
+                            Text(text = "Copy Github URL")
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(imageVector = Icons.Default.ContentCopy, contentDescription = "Copy Github URL")
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                FloatingActionButton(
+                    onClick = {
+                        isExpanded = !isExpanded
+                    }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Share"
+                    )
+                }
             }
         }
     ) { paddingValues ->
