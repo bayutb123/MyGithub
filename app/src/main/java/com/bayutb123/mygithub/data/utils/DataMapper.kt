@@ -22,7 +22,6 @@ class DataMapper {
                     followersUrl = it.followers_url,
                     followingUrl = it.following_url,
                     reposUrl = it.repos_url,
-                    isSaved = false
                 )
                 listUser.add(user)
             }
@@ -40,7 +39,6 @@ class DataMapper {
                     followersUrl = it.followers_url,
                     followingUrl = it.following_url,
                     reposUrl = it.repos_url,
-                    isSaved = false
                 )
                 listUser.add(user)
             }
@@ -88,7 +86,7 @@ class DataMapper {
             return listRepository
         }
 
-        fun saveAndMapUser(userDetail: UserDetail, currentState: Boolean) : User {
+        fun saveAndMapUser(userDetail: UserDetail) : User {
             return User(
                 id = userDetail.id,
                 login = userDetail.login,
@@ -97,7 +95,6 @@ class DataMapper {
                 followersUrl = userDetail.followersUrl,
                 followingUrl = userDetail.followingUrl,
                 reposUrl = userDetail.repoUrl,
-                isSaved = !currentState
             )
         }
     }
