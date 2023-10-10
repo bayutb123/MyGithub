@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bayutb123.mygithub.data.source.state.UserState
 import com.bayutb123.mygithub.domain.model.User
+import com.bayutb123.mygithub.domain.usecase.DatabaseUseCase
 import com.bayutb123.mygithub.domain.usecase.UserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RecommendationViewModel @Inject constructor(
-    private val userUseCase: UserUseCase
+    private val userUseCase: UserUseCase,
+    private val databaseUseCase: DatabaseUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow<UserState>(UserState.Loading)
     val state = _state.asStateFlow()
@@ -48,6 +50,12 @@ class RecommendationViewModel @Inject constructor(
             } else {
                 UserState.Empty("No data can be provided, this might because of rate limit")
             }
+        }
+    }
+
+    fun saveUser(user: User) {
+        viewModelScope.launch {
+            databaseUseCase.saveUserFromUser(user)
         }
     }
 }

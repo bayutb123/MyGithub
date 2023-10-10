@@ -27,9 +27,19 @@ class DatabaseRepositoryImpl @Inject constructor(
         dao.insertUser(saveAndMapUser(user))
     }
 
+    override suspend fun insertUserFromUser(user: User) {
+        Log.d("DatabaseRepositoryImpl", "insertUserFromUser: ${user.login}")
+        dao.insertUser(user)
+    }
+
     override suspend fun deleteUser(user: UserDetail) {
         Log.d("DatabaseRepositoryImpl", "deleteUser: ${user.login}")
         dao.deleteUser(saveAndMapUser(user))
+    }
+
+    override suspend fun deleteUserFromUser(user: User) {
+        Log.d("DatabaseRepositoryImpl", "deleteAllUsers: ${user.login}")
+        dao.deleteUser(user)
     }
 
     override fun getUser(login: String): User {

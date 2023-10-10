@@ -2,6 +2,7 @@ package com.bayutb123.mygithub.presentation.screen.home.saved
 
 import androidx.lifecycle.ViewModel
 import com.bayutb123.mygithub.data.source.state.UserState
+import com.bayutb123.mygithub.domain.model.User
 import com.bayutb123.mygithub.domain.model.UserDetail
 import com.bayutb123.mygithub.domain.usecase.DatabaseUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +25,6 @@ class SavedViewModel @Inject constructor(
     }
 
     private suspend fun getAllSavedUsers() {
-
         savedUserUseCase.getAllSavedUsers().collect {
             _state.value = if (it.isNotEmpty()) {
                 UserState.Success(it)
@@ -47,15 +47,10 @@ class SavedViewModel @Inject constructor(
         }
     }
 
-    fun deleteUser(user: UserDetail) {
+    fun deleteUser(user: User) {
         CoroutineScope(Dispatchers.IO).launch {
-            savedUserUseCase.deleteUser(user)
+            savedUserUseCase.deleteUserFromUser(user)
         }
     }
 
-    fun insertUser(user: UserDetail) {
-        CoroutineScope(Dispatchers.IO).launch {
-            savedUserUseCase.saveUser(user)
-        }
-    }
 }

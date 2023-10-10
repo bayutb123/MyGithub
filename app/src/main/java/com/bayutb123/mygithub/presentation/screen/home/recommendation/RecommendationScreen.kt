@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Commit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -51,50 +50,56 @@ fun RecommendationScreen(
 
     homeViewModel.getAllUsers(cacheList)
 
-    Scaffold(
-        topBar = {
-            Column(modifier.padding(horizontal = 16.dp, vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                AnimatedVisibility(visible = !isSearching) {
-                    Icon(imageVector = Icons.Rounded.Commit, contentDescription = null, modifier = modifier
+    Column(
+        modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            AnimatedVisibility(visible = !isSearching) {
+                Icon(
+                    imageVector = Icons.Rounded.Commit,
+                    contentDescription = null,
+                    modifier = modifier
                         .padding(bottom = 4.dp)
-                        .size(48.dp), tint = MaterialTheme.colorScheme.primary)
-                }
-                SearchBar(
-                    modifier = modifier.fillMaxWidth(),
-                    onSearch = {
-                        isSearching = it.isNotEmpty()
-                        CoroutineScope(homeViewModel.viewModelScope.coroutineContext).launch {
-                            if (isSearching) {
-                                homeViewModel.searchUsers(it)
-                            } else {
-                                homeViewModel.getAllUsers(cacheList)
-                            }
-                        }
-                    },
+                        .size(48.dp),
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
+            SearchBar(
+                modifier = modifier.fillMaxWidth(),
+                onSearch = {
+                    isSearching = it.isNotEmpty()
+                    CoroutineScope(homeViewModel.viewModelScope.coroutineContext).launch {
+                        if (isSearching) {
+                            homeViewModel.searchUsers(it)
+                        } else {
+                            homeViewModel.getAllUsers(cacheList)
+                        }
+                    }
+                },
+            )
         }
-    ) { paddingValue ->
-        Column(
-            modifier
-                .padding(paddingValue)
-                .fillMaxWidth()
-        ) {
-
-            AnimatedVisibility(visible = !isSearching) {
-                UserList(state = homeViewModel.state.collectAsState().value, onSuccessLoad = {
-                    cacheList = it
-                }, onClick = {
-                    onItemClick(it)
+        AnimatedVisibility(visible = !isSearching) {
+            UserList(state = homeViewModel.state.collectAsState().value, onSuccessLoad = {
+                cacheList = it
+            }, onClick = {
+                onItemClick(it)
+            },
+                onSaveClick = {
+                    homeViewModel.saveUser(it)
                 })
-            }
-            AnimatedVisibility(visible = isSearching) {
-                SearchUserList(state = homeViewModel.searchState.collectAsState().value, onClick = {
-                    onItemClick(it)
-                })
-            }
-
         }
+        AnimatedVisibility(visible = isSearching) {
+            SearchUserList(state = homeViewModel.searchState.collectAsState().value, onClick = {
+                onItemClick(it)
+            },
+                onSaveClick = {
+                    homeViewModel.saveUser(it)
+                })
+        }
+
     }
 }
 
@@ -103,24 +108,33 @@ fun UserList(
     modifier: Modifier = Modifier,
     state: UserState,
     onClick: (String) -> Unit,
-    onSuccessLoad: (List<User>) -> Unit
+    onSuccessLoad: (List<User>) -> Unit,
+    onSaveClick: (User) -> Unit
 ) {
     when (state) {
         is UserState.Success -> {
             onSuccessLoad(state.data)
             LazyColumn(modifier = modifier.fillMaxWidth()) {
                 items(state.data) { user ->
-                    UserItem(user = user, onClick = {
-                        onClick(user.login)
-                    })
+                    UserItem(
+                        onClick = {
+                            onClick(user.login)
+                        },
+                        user = user,
+                        onSaveClick = {
+                            onSaveClick(it)
+                        }
+                    )
                 }
             }
         }
 
         is UserState.Empty -> {
-            Box(modifier = modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp), contentAlignment = Alignment.Center
+            ) {
                 Text(text = state.message, textAlign = TextAlign.Center)
             }
         }
@@ -142,23 +156,32 @@ fun SearchUserList(
     modifier: Modifier = Modifier,
     state: UserState,
     onClick: (String) -> Unit,
+    onSaveClick: (User) -> Unit
 ) {
     when (state) {
         is UserState.Success -> {
 
             LazyColumn(modifier = modifier.fillMaxWidth()) {
                 items(state.data) { user ->
-                    UserItem(user = user, onClick = {
-                        onClick(user.login)
-                    })
+                    UserItem(
+                        user = user,
+                        onClick = {
+                            onClick(user.login)
+                        },
+                        onSaveClick = {
+                            onSaveClick(it)
+                        }
+                    )
                 }
             }
         }
 
         is UserState.Empty -> {
-            Box(modifier = modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp), contentAlignment = Alignment.Center
+            ) {
                 Text(text = state.message, textAlign = TextAlign.Center)
             }
         }
